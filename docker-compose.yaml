@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:16
+    container_name: database
+    volumes:
+      - db_vol:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: vk_db
+      POSTGRES_USER: vk_admin
+      POSTGRES_PASSWORD: vk_pass
+    networks:
+      - vk_net
+    ports:
+      - 5432:5432
+    restart: always
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready", "-U", "vk_admin"]
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 30s
+
+  backend:
+    image: app:1
+    container_name: app
+    environment:
+      HOST: pdb
+      PORT: 5432
+      DB_USER: vk_admin
+      DB_PASSWORD: vk_pass
+      DB_NAME: vk_db 
+    networks:
+      - vk_net
+    ports:
+      - 5000:5000
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+
+
+volumes:
+
+  db_vol:
+    name: vk_db_vol
+    external: true
+
+networks:
+  vk_net:
+    name: vk_net
