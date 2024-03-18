@@ -24,7 +24,7 @@ services:
 
   backend:
     image: app:1
-    container_name: app
+    container_name: vkapp
     environment:
       HOST: database
       PORT: 5432

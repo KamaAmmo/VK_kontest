@@ -19,17 +19,10 @@ import (
 type application struct {
 	infoLog  *log.Logger
 	errorLog *log.Logger
-	people   *storage.PersonStorage
+	people   *storage.ActorStorage
 	films    *storage.FilmStorage
 }
 
-// const (
-// 	host     = os.Getenv("HOST")
-// 	port     = os.Getenv("PORT")
-// 	user     = os.Getenv("DB_USER")
-// 	password = os.Getenv("DB_PASSWORD")
-// 	dbname   = os.Getenv("DB_NAME")
-// )
 
 func main() {
 	db_c := config.GetConfig()
@@ -53,7 +46,7 @@ func main() {
 	app := application{
 		infoLog:  infoLog,
 		errorLog: errorLog,
-		people:   &storage.PersonStorage{DB: db},
+		people:   &storage.ActorStorage{DB: db},
 		films:    &storage.FilmStorage{DB: db},
 	}
 
