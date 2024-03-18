@@ -7,6 +7,6 @@ RUN go get -u github.com/lib/pq
 
 COPY ./ ./
 
-# EXPOSE 5000
+EXPOSE 5000
 
 ENTRYPOINT [ "go", "run", "./cmd/app" ]

@@ -3,11 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+
 	// "fmt"
 	"log"
 	"net/http"
 	"os"
 	"vk_app/cmd/config"
+	"vk_app/internal/storage"
+
 	// "vk_app/internal/storage"
 
 	_ "github.com/lib/pq"
@@ -16,6 +19,8 @@ import (
 type application struct {
 	infoLog  *log.Logger
 	errorLog *log.Logger
+	people   *storage.PersonStorage
+	films    *storage.FilmStorage
 }
 
 // const (
@@ -37,12 +42,19 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime)
 
-	// _, err := storage.OpenDB(psqlInfo)
-	fmt.Println(psqlInfo)
+	db, err := storage.OpenDB(psqlInfo)
+	
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+	// fmt.Println(psqlInfo)
 
 	app := application{
 		infoLog:  infoLog,
 		errorLog: errorLog,
+		people:   &storage.PersonStorage{DB: db},
+		films:    &storage.FilmStorage{DB: db},
 	}
 
 	srv := &http.Server{
@@ -50,6 +62,6 @@ func main() {
 		Handler: app.route(),
 	}
 	fmt.Println("Getting started")
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
 }

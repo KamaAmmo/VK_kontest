@@ -1,0 +1,6 @@
+admin 
+    vk_admin
+    vk_pass
+user:
+    vk_user
+    pass

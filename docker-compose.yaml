@@ -13,8 +13,8 @@ services:
     networks:
       - vk_net
     ports:
-      - 5432:5432
-    restart: always
+      - 5431:5432
+    # restart: always
     # healthcheck:
     #   test: ["CMD-SHELL", "pg_isready", "-U", "vk_admin"]
     #   interval: 5s
@@ -26,7 +26,7 @@ services:
     image: app:1
     container_name: app
     environment:
-      HOST: pdb
+      HOST: database
       PORT: 5432
       DB_USER: vk_admin
       DB_PASSWORD: vk_pass

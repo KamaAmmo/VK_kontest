@@ -1,15 +1,20 @@
-package main 
+package main
 
 import (
 	// "fmt"
 	"net/http"
 )
 
-
-func (app *application) route() http.Handler{
+func (app *application) route() http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", app.home)
-	
-	return mux
+
+	//user
+	mux.HandleFunc("/actors", app.getActor)
+	// mux.HandleFunc("/actors", app.)
+
+	//admin
+
+	return app.logRequest(mux)
 }
