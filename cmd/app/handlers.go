@@ -154,6 +154,11 @@ func (app *application) createFilm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = f.Validate()
+	if err != nil {
+		app.serverError(w, err)
+	}
+
 	lid, err := app.films.Insert(f)
 	if err != nil {
 		app.serverError(w, err)
@@ -236,8 +241,7 @@ func (app *application) listFilms(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-
-func (app *application) searchFilm(w http.ResponseWriter, r *http.Request){
+func (app *application) searchFilm(w http.ResponseWriter, r *http.Request) {
 	var pattern string
 
 	var findFilms func(pattern string) ([]string, error)
@@ -246,28 +250,28 @@ func (app *application) searchFilm(w http.ResponseWriter, r *http.Request){
 	if title := v.Get("title"); title != "" {
 		pattern = title
 		findFilms = app.films.GetByTitle
-	} else if name := v.Get("name"); name != ""{
+	} else if name := v.Get("name"); name != "" {
 		pattern = name
 		findFilms = app.films.GetByActorName
 	} else {
 		app.clientError(w, http.StatusBadRequest)
-		return 
+		return
 	}
 
 	titles, err := findFilms(pattern)
-	if err != nil{
-		if errors.Is(err, storage.ErrNoRecord){
+	if err != nil {
+		if errors.Is(err, storage.ErrNoRecord) {
 			app.notFound(w)
 		} else {
 			app.serverError(w, err)
 		}
-		return 
+		return
 	}
 
 	data, err := json.MarshalIndent(titles, "", "	")
-	if err != nil{
+	if err != nil {
 		app.serverError(w, err)
-		return 
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
