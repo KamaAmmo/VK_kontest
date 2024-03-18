@@ -1,0 +1,583 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "My Application",
+        "title": "Vk_app",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:5000",
+    "basePath": "/",
+    "paths": {
+        "/actors/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "list actors and films",
+                "operationId": "list-actor-film-id",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "edit actor",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "actors"
+                ],
+                "summary": "edit actor",
+                "operationId": "edit-actor-id",
+                "parameters": [
+                    {
+                        "description": "new data about actor",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/storage.Person"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get actor by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "actors"
+                ],
+                "summary": "create actor",
+                "operationId": "create-actor-id",
+                "parameters": [
+                    {
+                        "description": "Actor personal data",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/storage.Person"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/actors/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get actor by id",
+                "tags": [
+                    "actors"
+                ],
+                "summary": "getActor",
+                "operationId": "get-actor-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "actor id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get actor by id",
+                "tags": [
+                    "actors"
+                ],
+                "summary": "delete actor",
+                "operationId": "delete-actor-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "actor id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/films": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get a list of films by a fragment of the film title or actor's name",
+                "tags": [
+                    "films"
+                ],
+                "summary": "searchFilmByPattern",
+                "operationId": "search-film-id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "by title movie",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "by actor name",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    }
+                }
+            }
+        },
+        "/films/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get movies with actors",
+                "tags": [
+                    "films"
+                ],
+                "summary": "listFilms",
+                "operationId": "list-films-id",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "films"
+                ],
+                "summary": "edit film",
+                "operationId": "edit-film-id",
+                "parameters": [
+                    {
+                        "description": "Data about film",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/storage.Film"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "films"
+                ],
+                "summary": "create film",
+                "operationId": "create-film-id",
+                "parameters": [
+                    {
+                        "description": "Data about film",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/storage.Film"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/films/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get actor by id",
+                "tags": [
+                    "films"
+                ],
+                "summary": "getFilm",
+                "operationId": "get-film-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "film id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "tags": [
+                    "films"
+                ],
+                "summary": "delete film",
+                "operationId": "delete-film-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "film id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Client Error"
+                    },
+                    "401": {
+                        "description": "You are not authorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "login existing user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "registration and logging"
+                ],
+                "summary": "loginUser",
+                "parameters": [
+                    {
+                        "description": "New user info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Succesfuly logged in",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {}
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "register new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "registration and logging"
+                ],
+                "summary": "registerUser",
+                "parameters": [
+                    {
+                        "description": "New user info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "New user registered",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "405": {
+                        "description": "Method Not Allowed",
+                        "schema": {}
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {}
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Posos"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "main.RegisterRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "Pass123"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "user"
+                }
+            }
+        },
+        "storage.Film": {
+            "type": "object",
+            "properties": {
+                "cast": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Alex Lesly"
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "example": "The first rule of Fight Club is"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number",
+                    "example": 8.7
+                },
+                "release_date": {
+                    "type": "string",
+                    "example": "1999-09-10"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Fight Club"
+                }
+            }
+        },
+        "storage.Person": {
+            "type": "object",
+            "properties": {
+                "birthDate": {
+                    "type": "string",
+                    "example": "1970-01-01"
+                },
+                "gender": {
+                    "type": "string",
+                    "example": "Male"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

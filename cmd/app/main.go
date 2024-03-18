@@ -13,11 +13,23 @@ import (
 	_ "github.com/lib/pq"
 )
 
+//	@title			Vk_app
+//	@version		1.0
+//	@description	My Application
+//  @schemes 		http
+//	@host			localhost:5000
+//	@BasePath		/
+//  @securityDefinitions.apikey ApiKeyAuth
+//  @in header
+//  @name Authorization
+
 type application struct {
-	infoLog  *log.Logger
-	errorLog *log.Logger
-	people   *storage.ActorStorage
-	films    *storage.FilmStorage
+	infoLog     *log.Logger
+	errorLog    *log.Logger
+	people      *storage.ActorStorage
+	films       *storage.FilmStorage
+	users       *storage.UserStorage
+	filmsActors *storage.FilmActorStorage
 }
 
 func main() {
@@ -40,10 +52,12 @@ func main() {
 	defer db.Close()
 
 	app := application{
-		infoLog:  infoLog,
-		errorLog: errorLog,
-		people:   &storage.ActorStorage{DB: db},
-		films:    &storage.FilmStorage{DB: db},
+		infoLog:     infoLog,
+		errorLog:    errorLog,
+		people:      &storage.ActorStorage{DB: db},
+		films:       &storage.FilmStorage{DB: db},
+		users:       &storage.UserStorage{DB: db},
+		filmsActors: &storage.FilmActorStorage{DB: db},
 	}
 
 	srv := &http.Server{

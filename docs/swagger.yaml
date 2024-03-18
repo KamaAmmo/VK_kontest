@@ -1,0 +1,377 @@
+basePath: /
+definitions:
+  main.LoginRequest:
+    properties:
+      name:
+        example: Posos
+        type: string
+      password:
+        example: "123"
+        type: string
+    type: object
+  main.RegisterRequest:
+    properties:
+      name:
+        example: John Doe
+        type: string
+      password:
+        example: Pass123
+        type: string
+      role:
+        example: user
+        type: string
+    type: object
+  storage.Film:
+    properties:
+      cast:
+        example:
+        - Alex Lesly
+        items:
+          type: string
+        type: array
+      description:
+        example: The first rule of Fight Club is
+        type: string
+      id:
+        type: integer
+      rating:
+        example: 8.7
+        type: number
+      release_date:
+        example: "1999-09-10"
+        type: string
+      title:
+        example: Fight Club
+        type: string
+    type: object
+  storage.Person:
+    properties:
+      birthDate:
+        example: "1970-01-01"
+        type: string
+      gender:
+        example: Male
+        type: string
+      id:
+        type: integer
+      name:
+        example: John Doe
+        type: string
+    type: object
+host: localhost:5000
+info:
+  contact: {}
+  description: My Application
+  title: Vk_app
+  version: "1.0"
+paths:
+  /actors/:
+    get:
+      operationId: list-actor-film-id
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+      security:
+      - ApiKeyAuth: []
+      summary: list actors and films
+    post:
+      consumes:
+      - application/json
+      description: get actor by id
+      operationId: create-actor-id
+      parameters:
+      - description: Actor personal data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/storage.Person'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+        "403":
+          description: Forbidden
+      security:
+      - ApiKeyAuth: []
+      summary: create actor
+      tags:
+      - actors
+    put:
+      consumes:
+      - application/json
+      description: edit actor
+      operationId: edit-actor-id
+      parameters:
+      - description: new data about actor
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/storage.Person'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+        "403":
+          description: Forbidden
+      security:
+      - ApiKeyAuth: []
+      summary: edit actor
+      tags:
+      - actors
+  /actors/{id}:
+    delete:
+      description: get actor by id
+      operationId: delete-actor-id
+      parameters:
+      - description: actor id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+        "403":
+          description: Forbidden
+      security:
+      - ApiKeyAuth: []
+      summary: delete actor
+      tags:
+      - actors
+    get:
+      description: get actor by id
+      operationId: get-actor-id
+      parameters:
+      - description: actor id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+      security:
+      - ApiKeyAuth: []
+      summary: getActor
+      tags:
+      - actors
+  /films:
+    get:
+      description: get a list of films by a fragment of the film title or actor's
+        name
+      operationId: search-film-id
+      parameters:
+      - description: by title movie
+        in: query
+        name: title
+        type: string
+      - description: by actor name
+        in: query
+        name: name
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+      security:
+      - ApiKeyAuth: []
+      summary: searchFilmByPattern
+      tags:
+      - films
+  /films/:
+    get:
+      description: get movies with actors
+      operationId: list-films-id
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+      security:
+      - ApiKeyAuth: []
+      summary: listFilms
+      tags:
+      - films
+    post:
+      consumes:
+      - application/json
+      operationId: create-film-id
+      parameters:
+      - description: Data about film
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/storage.Film'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+        "403":
+          description: Forbidden
+      security:
+      - ApiKeyAuth: []
+      summary: create film
+      tags:
+      - films
+    put:
+      consumes:
+      - application/json
+      operationId: edit-film-id
+      parameters:
+      - description: Data about film
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/storage.Film'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+        "403":
+          description: Forbidden
+      security:
+      - ApiKeyAuth: []
+      summary: edit film
+      tags:
+      - films
+  /films/{id}:
+    delete:
+      operationId: delete-film-id
+      parameters:
+      - description: film id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+        "403":
+          description: Forbidden
+      security:
+      - ApiKeyAuth: []
+      summary: delete film
+      tags:
+      - films
+    get:
+      description: get actor by id
+      operationId: get-film-id
+      parameters:
+      - description: film id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Client Error
+        "401":
+          description: You are not authorized
+      security:
+      - ApiKeyAuth: []
+      summary: getFilm
+      tags:
+      - films
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: login existing user
+      parameters:
+      - description: New user info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/main.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Succesfuly logged in
+          schema:
+            type: integer
+        "405":
+          description: Method Not Allowed
+          schema: {}
+        "409":
+          description: Conflict
+          schema: {}
+      summary: loginUser
+      tags:
+      - registration and logging
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: register new user
+      parameters:
+      - description: New user info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/main.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: New user registered
+          schema:
+            type: integer
+        "405":
+          description: Method Not Allowed
+          schema: {}
+        "409":
+          description: Conflict
+          schema: {}
+      summary: registerUser
+      tags:
+      - registration and logging
+schemes:
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

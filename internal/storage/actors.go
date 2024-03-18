@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"errors"
+	"strconv"
 	"time"
 )
 
@@ -11,50 +12,42 @@ type ActorStorage struct {
 }
 
 type Person struct {
-	ID        int
-	Name      string
-	Gender    string
-	BirthDate time.Time
+	ID        int      `json:"id"`
+	Name      string   `json:"name" example:"John Doe"`
+	Gender    string   `json:"gender" example:"Male"`
+	BirthDate JsonDate `json:"birthDate" example:"1970-01-01"`
 }
 
-
-// type ActorFilms map[string][]string
-
-func OpenDB(params string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", params)
-	if err != nil {
-		panic(err)
-	}
-
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-	return db, nil
-}
-
-func (s *ActorStorage) Get(id int) (*Person, error) {
+func (s *ActorStorage) Get(id int) (Person, error) {
 	stmt := `SELECT id, name, gender, birth_date FROM people WHERE id = $1`
-
-	p := Person{}
 
 	row := s.DB.QueryRow(stmt, id)
 
-	err := row.Scan(&p.ID, &p.Name, &p.Gender, &p.BirthDate)
+	p := Person{}
+	var NullGender sql.NullString
+	var NullBDate sql.NullTime
+	err := row.Scan(&p.ID, &p.Name, &NullGender, &NullBDate)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrNoRecord
+			return Person{}, ErrNoRecord
 		}
-		return nil, err
+		return Person{}, err
 	}
 
-	return &p, nil
+	if NullGender.Valid {
+		p.Gender = NullGender.String
+	}
+	if NullBDate.Valid {
+		p.BirthDate = JsonDate(NullBDate.Time)
+	}
+
+	return p, nil
 }
 
 func (s *ActorStorage) Insert(p Person) (int, error) {
 	stmt := `INSERT INTO people (name, gender, birth_date) VALUES ($1, $2, $3) RETURNING id`
 
-	row := s.DB.QueryRow(stmt, p.Name, p.Gender, p.BirthDate)
+	row := s.DB.QueryRow(stmt, p.Name, p.Gender, time.Time(p.BirthDate))
 
 	var lastInsertedId int
 	err := row.Scan(&lastInsertedId)
@@ -87,7 +80,7 @@ func (s *ActorStorage) Update(p Person) error {
 	stmt := `UPDATE people SET (name, gender, birth_date) = ($2, $3, $4)
 			WHERE id = $1 RETURNING $1`
 
-	row := s.DB.QueryRow(stmt, p.ID, p.Name, p.Gender, p.BirthDate)
+	row := s.DB.QueryRow(stmt, p.ID, p.Name, p.Gender, time.Time(p.BirthDate))
 	err := row.Err()
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -99,7 +92,7 @@ func (s *ActorStorage) Update(p Person) error {
 }
 
 func (s *ActorStorage) List() (map[string][]string, error) {
-	stmt := `SELECT p.name, f.title FROM people AS p LEFT JOIN films_actors fa ON p.id = fa.actor_id
+	stmt := `SELECT p.id, p.name, f.title FROM people AS p LEFT JOIN films_actors fa ON p.id = fa.actor_id
 			LEFT JOIN films f ON f.id = fa.film_id
 			ORDER BY p.id`
 
@@ -113,35 +106,50 @@ func (s *ActorStorage) List() (map[string][]string, error) {
 
 	for rows.Next() {
 		var name, title string
+		var id int
 		var titleNull sql.NullString
 
-		err = rows.Scan(&name, &titleNull)
+		err = rows.Scan(&id, &name, &titleNull)
 		if err != nil {
 			return nil, err
 		}
-		if titleNull.Valid{
+		if titleNull.Valid {
 			title = titleNull.String
 		}
+		name = strconv.Itoa(id) + " - " + name
 		res[name] = append(res[name], title)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
-	
 
 	return res, nil
 }
 
-// package storage 
+func (s *ActorStorage) InsertOnlyName(name string) (int, error) {
+	stmt := `
+		WITH inserted_person AS (
+		INSERT INTO people (name)
+		SELECT $1  
+		WHERE NOT EXISTS (
+			SELECT id
+			FROM people
+			WHERE name = $1
+		)
+		RETURNING id
+		)
+		SELECT id FROM inserted_person
+		UNION ALL
+		SELECT id FROM people WHERE name = $1
+		`
+	row := s.DB.QueryRow(stmt, name)
 
-// import (
-// 	"encoding/json"
-// )
+	var lastInsertedId int
+	err := row.Scan(&lastInsertedId)
+	if err != nil {
+		return 0, err
+	}
 
-// func (s TitleType) MarhsalJSON() ([]byte, error) {
-// 	if s.Valid {
-// 		return json.Marshal(s.String)
-// 	}
-// 	return []byte{}, nil
-// }
+	return int(lastInsertedId), nil
+}
