@@ -51,10 +51,10 @@ func (s *ActorStorage) Get(id int) (*Person, error) {
 	return &p, nil
 }
 
-func (s *ActorStorage) Insert(name, gender string, birth_date time.Time) (int, error) {
+func (s *ActorStorage) Insert(p Person) (int, error) {
 	stmt := `INSERT INTO people (name, gender, birth_date) VALUES ($1, $2, $3) RETURNING id`
 
-	row := s.DB.QueryRow(stmt, name, gender, birth_date)
+	row := s.DB.QueryRow(stmt, p.Name, p.Gender, p.BirthDate)
 
 	var lastInsertedId int
 	err := row.Scan(&lastInsertedId)
