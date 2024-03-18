@@ -170,7 +170,6 @@ func (app *application) createFilm(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-
 func (app *application) deleteFilm(w http.ResponseWriter, r *http.Request) {
 
 	id := app.getID(w, r, getFilmRe)
@@ -187,7 +186,6 @@ func (app *application) deleteFilm(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
-
 
 func (app *application) editFilm(w http.ResponseWriter, r *http.Request) {
 	id := app.getID(w, r, getFilmRe)
@@ -210,4 +208,69 @@ func (app *application) editFilm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (app *application) listFilms(w http.ResponseWriter, r *http.Request) {
+	sortColumn, sortOrder := `rating`, `DESC`
+
+	v := r.URL.Query()
+	if value := v.Get("sortcolumn"); value != "" {
+		sortColumn = value
+	}
+	if value := v.Get("sortorder"); value != "" {
+		sortOrder = value
+	}
+
+	Films, err := app.films.List(sortColumn, sortOrder)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	data, err := json.MarshalIndent(Films, "", "	")
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+
+func (app *application) searchFilm(w http.ResponseWriter, r *http.Request){
+	var pattern string
+
+	var findFilms func(pattern string) ([]string, error)
+
+	v := r.URL.Query()
+	if title := v.Get("title"); title != "" {
+		pattern = title
+		findFilms = app.films.GetByTitle
+	} else if name := v.Get("name"); name != ""{
+		pattern = name
+		findFilms = app.films.GetByActorName
+	} else {
+		app.clientError(w, http.StatusBadRequest)
+		return 
+	}
+
+	titles, err := findFilms(pattern)
+	if err != nil{
+		if errors.Is(err, storage.ErrNoRecord){
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return 
+	}
+
+	data, err := json.MarshalIndent(titles, "", "	")
+	if err != nil{
+		app.serverError(w, err)
+		return 
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+
 }

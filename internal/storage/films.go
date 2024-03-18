@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -81,4 +82,82 @@ func (s *FilmStorage) Update(f Film) error {
 		return err
 	}
 	return nil
+}
+
+func (s *FilmStorage) List(sortColumn, sortOrder string) ([]string, error) {
+
+	stmt := fmt.Sprintf("SELECT title FROM films ORDER BY %s %s", sortColumn, sortOrder)
+
+	rows, err := s.DB.Query(stmt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		}
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := []string{}
+	for rows.Next() {
+		var title string
+		err = rows.Scan(&title)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, title)
+	}
+	return result, nil
+}
+
+func (s *FilmStorage) GetByTitle(title string) ([]string, error) {
+	pattern := "%" + title + "%"
+	stmt := fmt.Sprintf(`SELECT DISTINCT f.title FROM films f WHERE LOWER(f.title) LIKE LOWER('%s')`, pattern)
+
+	rows, err := s.DB.Query(stmt)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		}
+		return nil, err
+	}
+	result := []string{}
+	for rows.Next() {
+
+		var title string
+		err := rows.Scan(&title)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, title)
+	}
+
+	return result, nil
+}
+
+func (s *FilmStorage) GetByActorName(name string) ([]string, error) {
+	pattern := "%" + name + "%"
+	stmt := fmt.Sprintf(`SELECT DISTINCT f.title FROM films f LEFT JOIN films_actors fa ON fa.film_id = f.id 
+		LEFT JOIN people p ON p.id = fa.actor_id WHERE LOWER(p.name) LIKE LOWER('%s')`, pattern)
+
+	rows, err := s.DB.Query(stmt)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		}
+		return nil, err
+	}
+	result := []string{}
+	for rows.Next() {
+
+		var title string
+		err := rows.Scan(&title)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, title)
+	}
+
+	return result, nil
 }

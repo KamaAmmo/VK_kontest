@@ -11,15 +11,16 @@ var (
 	getActorRe    = regexp.MustCompile(`^\/actors\/(\d+)$`)
 	createActorRe = regexp.MustCompile(`^\/actors[\/]*$`)
 
-	getFilmRe 	  = regexp.MustCompile(`^\/films\/(\d+)$`)
-	createFilmRe  = regexp.MustCompile(`^\/films[\/]*$`)
+	getFilmRe    = regexp.MustCompile(`^\/films\/(\d+)$`)
+	createFilmRe = regexp.MustCompile(`^\/films[\/]*$`)
+	listFilmRe   = regexp.MustCompile(`^\/films`)
 )
 
 type actorsHandler struct {
 	app *application
 }
 
-type filmsHandler struct{
+type filmsHandler struct {
 	app *application
 }
 
@@ -38,6 +39,15 @@ func (h *filmsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	case r.Method == http.MethodPut && getFilmRe.MatchString(path):
 		h.app.editFilm(w, r)
+		return 
+	case r.Method == http.MethodGet && listFilmRe.MatchString(path):
+		v := r.URL.Query()
+		if v.Get("name") != "" || v.Get("title") != ""{
+			h.app.searchFilm(w, r)
+		} else {
+			h.app.listFilms(w, r)
+		}
+		return
 	default:
 		h.app.notFound(w)
 	}
@@ -76,5 +86,5 @@ func (app *application) route() http.Handler {
 	mux.Handle("/films/", filmsHandler)
 	//admin
 
-	return app.logRequest(mux)
+	return app.logRequest(app.recoverPanic(mux))
 }
